@@ -24,7 +24,7 @@ def load_data(directory):
             people[row["id"]] = {
                 "name": row["name"],
                 "birth": row["birth"],
-                "movies": set()
+                "movies": set(),
             }
             if row["name"].lower() not in names:
                 names[row["name"].lower()] = {row["id"]}
@@ -38,7 +38,7 @@ def load_data(directory):
             movies[row["id"]] = {
                 "title": row["title"],
                 "year": row["year"],
-                "stars": set()
+                "stars": set(),
             }
 
     # Load stars
@@ -91,9 +91,28 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    start_node = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start_node)
+    explored = set()
+    while True:
+        if frontier.empty():
+            return None
 
-    # TODO
-    raise NotImplementedError
+        node = frontier.remove()
+        explored.add(node.state)
+        if node.state == target:
+            result = []
+            while node.parent is not None:
+                result.append((node.action, node.state))
+                node = node.parent
+            result.reverse()
+            return result
+
+        for movie_id, person_id in neighbors_for_person(node.state):
+            if person_id not in explored:
+                child = Node(state=person_id, parent=node, action=movie_id)
+                frontier.add(child)
 
 
 def person_id_for_name(name):
